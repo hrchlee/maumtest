@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>마음 풍경 테스트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
+<style>
+/* Layout: 한 손 모바일 흐름 — 상단 고정 헤더, 질문 하나씩, 하단 고정 버튼. 각 테스트는 자기 풍경 그림을 가진다. */
+:root{
+  --bg:#F1F3EF; --surface:#FFFFFF; --ink:#1C2430; --muted:#5B6470; --line:#D8DCD4;
+  --accent:#2D5C8A; --accent-ink:#FFFFFF; --accent-soft:#E2EBF4;
+  --scene-filter:none;
+  --f-display:"Gowun Batang", "Nanum Myeongjo", "AppleMyungjo", serif;
+  --f-body:"IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --r:12px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#11151B; --surface:#1A2029; --ink:#E6E9ED; --muted:#9AA3AE; --line:#2B333D;
+    --accent:#86B2DD; --accent-ink:#0D1620; --accent-soft:#1D2D3E;
+    --scene-filter:brightness(.8) saturate(.9); color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#11151B; --surface:#1A2029; --ink:#E6E9ED; --muted:#9AA3AE; --line:#2B333D;
+  --accent:#86B2DD; --accent-ink:#0D1620; --accent-soft:#1D2D3E;
+  --scene-filter:brightness(.8) saturate(.9); color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.65;-webkit-tap-highlight-color:transparent}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+button{font:inherit;color:inherit}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.top-in{max-width:560px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left,0px));padding-right:max(16px, env(safe-area-inset-right,0px));padding-block:10px;min-height:56px;display:flex;align-items:center;gap:10px}
+.brand{display:flex;flex-direction:column;line-height:1.3}
+.brand-t{font-family:var(--f-display);font-weight:700;font-size:1.25rem}
+.brand-s{font-size:.8rem;color:var(--muted)}
+.back{border:0;background:none;padding:8px 10px 8px 0;font-size:.95rem;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:4px;min-height:44px}
+.top-title{flex:1;min-width:0;font-weight:600;font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.count{font-variant-numeric:tabular-nums;font-size:.85rem;color:var(--muted)}
+.prog{height:3px;background:var(--line)}
+.prog i{display:block;height:100%;background:var(--accent);transition:width .25s ease}
+
+.wrap{max-width:560px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left,0px));padding-right:max(16px, env(safe-area-inset-right,0px));padding-block:20px 132px}
+.wrap.home{padding-block:20px 48px}
+.lede{margin:0 0 18px;color:var(--muted);font-size:.95rem}
+
+.list{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.card{width:100%;display:flex;gap:14px;align-items:stretch;text-align:left;padding:10px;border:1px solid var(--line);border-radius:14px;background:var(--surface);cursor:pointer}
+.card:active{transform:scale(.99)}
+.thumb{flex:0 0 88px;height:76px;border-radius:9px;overflow:hidden;filter:var(--scene-filter)}
+.thumb svg,.banner svg{display:block;width:100%;height:100%}
+.card-b{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:2px}
+.card-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.card-t{font-family:var(--f-display);font-weight:700;font-size:1.08rem}
+.card-d{font-size:.88rem;color:var(--ink)}
+.card-m{font-size:.78rem;color:var(--muted)}
+.chip{font-size:.7rem;font-weight:600;letter-spacing:.02em;padding:2px 8px;border-radius:99px;border:1px solid var(--accent);color:var(--accent)}
+.chip.done{background:var(--accent);color:var(--accent-ink)}
+.note{margin:24px 0 0;font-size:.8rem;color:var(--muted);line-height:1.6}
+
+.banner{height:132px;border-radius:14px;overflow:hidden;filter:var(--scene-filter)}
+h1{font-family:var(--f-display);font-weight:700;font-size:1.7rem;line-height:1.3;margin:20px 0 10px;text-wrap:balance}
+.intro p{margin:0 0 10px}
+.intro .sub{color:var(--muted);font-size:.92rem}
+
+.eyebrow{font-size:.78rem;font-weight:600;letter-spacing:.08em;color:var(--accent);margin:4px 0 6px}
+h2.q{font-family:var(--f-display);font-weight:700;font-size:1.4rem;line-height:1.4;margin:0 0 6px;text-wrap:balance}
+.hint{margin:0 0 18px;color:var(--muted);font-size:.9rem}
+.opts{display:grid;gap:10px}
+.opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:13px 16px;min-height:56px;border:1.5px solid var(--line);border-radius:var(--r);background:var(--surface);cursor:pointer;font-size:1rem;line-height:1.45}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.mark{flex:0 0 22px;height:22px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-size:.78rem;font-weight:600;font-variant-numeric:tabular-nums}
+.opt[aria-pressed="true"] .mark{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.opt[aria-pressed="true"] .mark.chk::after{content:"";width:6px;height:11px;border:solid var(--accent-ink);border-width:0 2px 2px 0;transform:translateY(-1px) rotate(45deg)}
+.seq{margin:16px 0 0;font-size:.9rem;color:var(--muted);min-height:1.6em}
+.seq b{color:var(--ink);font-weight:600}
+
+.field{display:grid;gap:6px;margin-bottom:14px}
+.field label{font-size:.85rem;font-weight:600}
+.field input{width:100%;font:inherit;font-size:16px;padding:13px 14px;border:1.5px solid var(--line);border-radius:var(--r);background:var(--surface);color:var(--ink)}
+.field input:focus{border-color:var(--accent);outline:none}
+
+.actions{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--bg);border-top:1px solid var(--line);padding-left:max(16px, env(safe-area-inset-left,0px));padding-right:max(16px, env(safe-area-inset-right,0px));padding-top:12px;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px))}
+.actions-in{max-width:528px;margin:0 auto;display:flex;gap:10px}
+.btn{flex:1;min-height:52px;border-radius:var(--r);font-weight:600;font-size:1rem;cursor:pointer;padding:0 18px}
+.btn-primary{background:var(--accent);color:var(--accent-ink);border:0}
+.btn-ghost{background:var(--surface);color:var(--ink);border:1px solid var(--line);flex:0 0 auto}
+.btn-ghost.wide{flex:1}
+.btn:disabled{opacity:.38;cursor:default}
+
+.res-h{margin-top:20px}
+.lead{background:var(--accent-soft);border-radius:14px;padding:18px;margin:16px 0}
+.lead .sym{color:var(--accent)}
+.big{font-family:var(--f-display);font-weight:700;font-size:1.5rem;margin:2px 0 6px;line-height:1.35}
+.lead p{margin:0}
+.rank{list-style:none;padding:0;margin:8px 0 4px;display:grid;gap:8px}
+.rank li{display:grid;grid-template-columns:26px 1fr;gap:10px;align-items:center}
+.rank .n{font-variant-numeric:tabular-nums;font-weight:600;color:var(--muted);text-align:right}
+.rank .row{display:flex;justify-content:space-between;gap:8px;font-size:.95rem}
+.rank .row span:last-child{color:var(--muted)}
+.rank .track{height:6px;border-radius:3px;background:var(--line);margin-top:4px;overflow:hidden}
+.rank .track i{display:block;height:100%;background:var(--accent);border-radius:3px}
+.items{list-style:none;padding:0;margin:8px 0 0}
+.items li{padding:16px 0;border-top:1px solid var(--line)}
+.sym{display:block;font-size:.76rem;font-weight:600;letter-spacing:.04em;color:var(--muted);margin-bottom:4px}
+.ans{font-family:var(--f-display);font-weight:700;font-size:1.12rem;margin:0 0 4px}
+.mean{margin:0}
+.after{margin:16px 0 0;padding:14px 16px;border:1px dashed var(--line);border-radius:12px;font-size:.9rem;color:var(--muted)}
+.sec-t{font-family:var(--f-display);font-weight:700;font-size:1.15rem;margin:22px 0 4px}
+
+.toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:99px;font-size:.88rem;z-index:20;max-width:calc(100% - 32px)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const SCENES = {
+desert:`<svg viewBox="0 0 400 120" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="400" height="120" fill="#F3D9AA"/><circle cx="318" cy="36" r="16" fill="#F2AE4B"/><path d="M0 80 Q90 54 180 76 T400 68 V120 H0Z" fill="#E1B26F"/><path d="M0 98 Q120 76 230 96 T400 92 V120 H0Z" fill="#C88E4E"/><g fill="#7A5634"><path d="M70 92h22v-6l6-4v10h3v6H70z"/><path d="M108 94h14v-4l4-3v7h2v4h-20z"/></g></svg>`,
+pasture:`<svg viewBox="0 0 400 120" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="400" height="120" fill="#DCEAEE"/><circle cx="68" cy="34" r="15" fill="#F2CC63"/><path d="M0 78 Q110 54 220 72 T400 62 V120H0Z" fill="#AECF92"/><path d="M0 96 Q140 78 270 92 T400 88 V120H0Z" fill="#7BAA68"/><g stroke="#7A5B3A" stroke-width="3" stroke-linecap="round"><path d="M250 74v24M282 72v24M314 70v24M346 69v24"/><path d="M246 80L350 75M246 89L350 84"/></g></svg>`,
+cube:`<svg viewBox="0 0 400 120" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="400" height="120" fill="#EADFCB"/><ellipse cx="72" cy="30" rx="48" ry="15" fill="#8D8794"/><ellipse cx="104" cy="24" rx="28" ry="11" fill="#A39DA9"/><g stroke="#8D8794" stroke-width="2" stroke-linecap="round"><path d="M44 46l-5 14M62 47l-5 14M80 46l-5 14M98 45l-5 14"/></g><path d="M0 92 Q150 76 400 88 V120H0Z" fill="#D6B482"/><path d="M196 58l24-12 24 12-24 12z" fill="#CFE2EE"/><path d="M196 58v26l24 12V70z" fill="#93B6CE"/><path d="M244 58v26l-24 12V70z" fill="#AECADD"/><g stroke="#7A5B3A" stroke-width="2.5" stroke-linecap="round"><path d="M256 96l12-48M270 96l12-48"/><path d="M258 88h14M260 78h14M263 68h14M265 58h14"/></g><g fill="#D9667A"><circle cx="176" cy="97" r="3"/><circle cx="167" cy="100" r="3"/><circle cx="184" cy="101" r="2.6"/></g></svg>`,
+forest:`<svg viewBox="0 0 400 120" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="400" height="120" fill="#DDE7D9"/><path d="M0 100 Q200 88 400 98 V120H0Z" fill="#8FAE7E"/><g fill="#3E6A4B"><path d="M14 104L40 30 66 104Z"/><path d="M52 104L82 18 112 104Z"/><path d="M300 104L328 26 356 104Z"/><path d="M340 104L370 36 400 104Z"/></g><g fill="#5C8A63"><path d="M96 106L118 50 140 106Z"/><path d="M262 106L284 56 306 106Z"/></g><path d="M178 74h52v28h-52z" fill="#B48A5E"/><path d="M170 76l34-24 34 24z" fill="#7C5536"/><path d="M198 86h12v16h-12z" fill="#5A3C25"/><path d="M150 120 Q190 106 204 103 Q218 106 252 120Z" fill="#CDBB94"/></svg>`,
+night:`<svg viewBox="0 0 400 120" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="400" height="120" fill="#24344A"/><circle cx="330" cy="30" r="14" fill="#F3E7C2"/><circle cx="337" cy="25" r="12" fill="#24344A"/><g stroke="#F3E7C2" stroke-width="1" opacity=".55"><path d="M80 34L150 22L222 38"/></g><g fill="#F3E7C2"><circle cx="80" cy="34" r="3.4"/><circle cx="150" cy="22" r="2.8"/><circle cx="222" cy="38" r="3.4"/><circle cx="270" cy="18" r="1.3"/><circle cx="36" cy="16" r="1.3"/><circle cx="188" cy="12" r="1.1"/></g><path d="M0 92 Q120 70 230 88 T400 80 V120H0Z" fill="#33485F"/><path d="M0 106 Q160 92 300 104 T400 102 V120H0Z" fill="#1A2738"/></svg>`,
+wall:`<svg viewBox="0 0 400 120" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><pattern id="brick" width="40" height="16" patternUnits="userSpaceOnUse"><rect width="40" height="16" fill="#A6897A"/><path d="M0 .5h40M0 8.5h40M20 0v8M.5 8v8M39.5 8v8" stroke="#86695C" stroke-width="1.2"/></pattern></defs><rect width="400" height="120" fill="#E3E5E8"/><path d="M0 94h400v26H0z" fill="#BDB5A6"/><rect x="0" y="34" width="400" height="62" fill="url(#brick)"/><path d="M168 120L194 96h18l26 24Z" fill="#D8D1C2"/></svg>`,
+island:`<svg viewBox="0 0 400 120" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="400" height="120" fill="#D5E8F1"/><path d="M0 70h400v50H0z" fill="#5D9DC0"/><path d="M0 70h400v5H0z" fill="#7DB4D1"/><ellipse cx="150" cy="98" rx="90" ry="16" fill="#E6D2A1"/><path d="M152 94 Q148 68 160 46" stroke="#7A5B3A" stroke-width="5" fill="none" stroke-linecap="round"/><g fill="#4D8A55"><path d="M160 46 Q134 38 118 54 Q140 42 160 49Z"/><path d="M160 46 Q186 36 204 52 Q180 42 160 49Z"/><path d="M160 46 Q150 26 130 24 Q150 32 158 49Z"/><path d="M160 46 Q176 24 196 26 Q176 34 162 49Z"/></g><path d="M318 64h30l-6 7h-18z" fill="#4A4E58"/><path d="M332 64V47l11 15z" fill="#F4F4EF"/></svg>`
+};
+
+const O = (t,m)=>({t,m});
+
+const TESTS = [
+{ id:'desert', title:'사막의 다섯 동물', scene:'desert', time:'약 1분', blurb:'끝까지 놓지 않는 가치',
+  intro:['당신은 양, 소, 말, 원숭이, 사자를 데리고 사막을 건너고 있습니다.','물과 식량이 점점 줄어들어 한 마리씩 떠나보내야 합니다. 오래 고민하지 말고 떠오르는 순서대로 고르세요.'],
+  qs:[{id:'order',type:'order',drop:true,prompt:'어떤 순서로 떠나보내겠습니까?',hint:'가장 먼저 떠나보낼 동물부터 누르세요. 다시 누르면 취소됩니다.',
+    items:[
+      {k:'양',m:'사랑',d:'관계 속에서 힘을 얻는 사람입니다. 중요한 결정을 할 때도 가까운 사람의 마음을 먼저 떠올립니다.'},
+      {k:'소',m:'일·직업',d:'일에서 의미와 보람을 찾습니다. 맡은 일을 끝까지 해내는 책임감이 큰 사람입니다.'},
+      {k:'말',m:'가족',d:'가족이 삶의 중심입니다. 어디에 있든 돌아갈 곳을 지키는 일을 가장 중요하게 여깁니다.'},
+      {k:'원숭이',m:'친구',d:'사람들과 어울리며 에너지를 얻습니다. 오래 함께한 친구가 큰 버팀목입니다.'},
+      {k:'사자',m:'자존심',d:'스스로에 대한 기준과 자부심이 뚜렷합니다. 어떤 상황에서도 나다움을 잃지 않으려 합니다.'}]}],
+  note:'마지막까지 남긴 동물이 지금 가장 놓기 싫은 가치입니다. 먼저 떠나보낸 동물은 덜 소중하다기보다, 어려울 때 가장 먼저 양보할 수 있는 영역에 가깝습니다.'},
+
+{ id:'ranking', title:'초원의 동물 순위', scene:'pasture', time:'약 1분', blurb:'삶에서 앞에 두는 가치의 순서',
+  intro:['넓은 초원에 소, 호랑이, 양, 말, 돼지가 있습니다.','마음이 가는 동물부터 순서대로 골라 주세요. 이유는 생각하지 않아도 됩니다.'],
+  qs:[{id:'order',type:'order',drop:false,prompt:'좋아하는 순서대로 골라 주세요.',hint:'가장 좋아하는 동물부터 누르세요. 다시 누르면 취소됩니다.',
+    items:[
+      {k:'소',m:'일·직업',d:'일에서 의미와 보람을 찾습니다. 성실함으로 신뢰를 쌓는 사람입니다.'},
+      {k:'호랑이',m:'자존심',d:'스스로에 대한 기준과 자부심이 뚜렷합니다. 인정받는 것보다 부끄럽지 않은 것을 더 중요하게 봅니다.'},
+      {k:'양',m:'사랑',d:'관계 속에서 힘을 얻습니다. 사랑하는 사람과의 시간이 삶의 연료입니다.'},
+      {k:'말',m:'가족',d:'가족이 삶의 중심입니다. 가족이 편안해야 나도 편안하다고 느낍니다.'},
+      {k:'돼지',m:'돈',d:'경제적 안정과 여유를 중요하게 봅니다. 현실 감각이 좋고 미래를 미리 대비하는 편입니다.'}]}],
+  note:'앞에 둔 동물일수록 지금 삶에서 우선순위가 높은 가치입니다. 몇 달 뒤에 다시 해 보면 순서가 바뀌기도 하는데, 그 변화 자체가 흥미로운 이야깃거리가 됩니다.'},
+
+{ id:'cube', title:'사막의 큐브', scene:'cube', time:'약 3분', blurb:'자아, 친구, 연인, 아끼는 것, 걱정',
+  intro:['눈을 감고 끝없는 사막을 떠올려 보세요.','그곳에 큐브 하나, 사다리, 말, 꽃, 그리고 폭풍이 있습니다. 처음 떠오른 장면을 그대로 고르는 것이 핵심입니다.'],
+  qs:[
+  {id:'size',type:'single',prompt:'큐브는 얼마나 큰가요?',sym:'큐브의 크기 = 자아의 크기, 자신감',opts:[
+    O('손바닥만 하다','자신을 작고 겸손하게 봅니다. 스스로를 드러내기보다 상황을 살피는 편이고, 자신감이 필요한 순간 한발 물러설 때가 있습니다.'),
+    O('사람 키 정도','자신을 현실적으로 인식합니다. 과하지도 부족하지도 않은 균형 잡힌 자기상입니다.'),
+    O('집채만 하다','자신감이 크고 존재감이 있는 편입니다. 주변에서 당신을 든든하게 느낄 가능성이 큽니다.'),
+    O('끝이 안 보일 만큼 거대하다','자아가 매우 크고 확고합니다. 추진력이 강한 만큼, 다른 사람의 의견이 들어올 틈을 의식적으로 남겨 두면 좋습니다.')]},
+  {id:'material',type:'single',prompt:'큐브는 무엇으로 만들어져 있나요?',sym:'재질 = 마음을 드러내는 방식',opts:[
+    O('투명한 유리','속마음이 잘 드러나는 솔직한 사람입니다. 숨기는 게 적어 신뢰를 얻기 쉽지만, 상처도 그대로 보일 수 있습니다.'),
+    O('반짝이는 금속','쉽게 속을 내보이지 않는 단단한 사람입니다. 처음엔 거리감이 있어도, 한번 믿은 사람에게는 오래 버팀목이 됩니다.'),
+    O('묵직한 돌','신중하고 흔들림이 적습니다. 변화보다 꾸준함을 믿는 편입니다.'),
+    O('따뜻한 나무','자연스럽고 편안한 분위기를 가진 사람입니다. 곁에 있으면 긴장이 풀린다는 말을 들을 가능성이 큽니다.'),
+    O('차가운 얼음','겉으로는 침착해 보여도 속은 섬세합니다. 감정 변화에 민감한 편입니다.')]},
+  {id:'place',type:'single',prompt:'큐브는 어디에 있나요?',sym:'큐브의 위치 = 현실과의 거리',opts:[
+    O('모래 위에 놓여 있다','현실에 단단히 발을 딛고 있습니다. 지금 할 수 있는 일에 집중하는 실용적인 태도입니다.'),
+    O('반쯤 모래에 묻혀 있다','드러내지 않은 생각이나 감정이 있습니다. 안정감을 중요하게 여기고, 쉽게 움직이지 않으려 합니다.'),
+    O('공중에 떠 있다','상상력이 풍부하고 이상을 좇습니다. 가끔은 현실의 일과 거리를 두고 싶은 마음이 있을 수 있습니다.')]},
+  {id:'ladder',type:'single',prompt:'사다리는 어디에 있나요?',sym:'사다리 = 친구, 큐브와의 거리 = 친구와의 거리',opts:[
+    O('큐브에 기대어 있다','친구에게 기대고, 친구도 당신에게 기댑니다. 서로 의지하는 가까운 관계입니다.'),
+    O('큐브 옆에 따로 서 있다','친구와 가깝지만 서로의 영역을 존중합니다. 적당한 거리를 아는 관계입니다.'),
+    O('큐브와 멀리 떨어져 있다','요즘 친구들과 거리가 있거나, 혼자 해결하는 쪽을 택하고 있습니다.'),
+    O('바닥에 누워 있다','친구 관계가 잠시 쉬어 가는 시기입니다. 연락이 뜸했던 사람이 있다면 떠올려 보세요.')]},
+  {id:'ladderState',type:'single',prompt:'사다리는 어떤 상태인가요?',sym:'사다리의 상태 = 우정의 상태',opts:[
+    O('새것처럼 튼튼하다','지금의 우정이 건강하고 믿음직합니다.'),
+    O('오래되고 손때가 묻었다','오랜 세월을 함께한 친구가 곁에 있습니다. 새로움보다 깊이가 있는 관계입니다.'),
+    O('칸이 몇 개 빠져 있다','관계 어딘가에 서운함이나 공백이 있을 수 있습니다. 채우고 싶은 빈칸이 있는지 생각해 보세요.')]},
+  {id:'horse',type:'single',prompt:'말은 무엇을 하고 있나요?',sym:'말 = 연인·배우자',opts:[
+    O('큐브 곁에 조용히 서 있다','늘 곁에 있어 주는 안정적인 동반자를 원하거나, 이미 그런 사람이 곁에 있습니다.'),
+    O('자유롭게 달리고 있다','서로의 자유를 존중하는 관계를 바랍니다. 함께 달리는 동료 같은 사랑입니다.'),
+    O('풀을 뜯거나 물을 마신다','편안하고 일상적인 관계를 원합니다. 소소한 하루를 함께하는 것이 사랑이라고 느낍니다.'),
+    O('고삐에 묶여 있다','관계에서 확실함과 약속을 중요하게 여깁니다. 지금의 관계가 조금 답답하게 느껴진다는 신호일 수도 있습니다.'),
+    O('멀리서 이쪽을 보고 있다','마음에 둔 사람이 있지만 아직 거리가 있거나, 사랑에 조심스러운 상태입니다.')]},
+  {id:'horseColor',type:'single',prompt:'말은 무슨 색인가요?',sym:'말의 색 = 끌리는 사람의 분위기',opts:[
+    O('흰색','다정하고 순수한 사람에게 끌립니다.'),
+    O('검은색','신비롭고 카리스마 있는 사람에게 끌립니다.'),
+    O('갈색','편안하고 현실적인 사람에게 끌립니다.'),
+    O('얼룩무늬','개성 있고 자유로운 사람에게 끌립니다.')]},
+  {id:'flowers',type:'single',prompt:'꽃은 몇 송이 피어 있나요?',sym:'꽃 = 자녀, 또는 아끼고 키우는 것',opts:[
+    O('한두 송이','소수의 소중한 대상에게 마음을 모읍니다. 하나를 정성껏 키우고 싶은 마음입니다.'),
+    O('여러 송이','돌보고 싶은 대상이 여럿입니다. 가족, 후배, 키워 가는 일 등 마음 쏟는 곳이 다양합니다.'),
+    O('사막을 덮은 꽃밭','돌봄과 성장에 대한 애정이 아주 큽니다. 무언가를 키워 내는 데서 큰 보람을 느낍니다.'),
+    O('꽃이 없다','지금은 무언가를 돌보기보다 자신에게 집중하는 시기입니다.')]},
+  {id:'flowerPlace',type:'single',when:a=>a.flowers!==3,prompt:'꽃은 어디에 피어 있나요?',sym:'꽃의 위치 = 아끼는 것을 돌보는 방식',opts:[
+    O('큐브 바로 곁','아끼는 대상을 가까이에서 직접 챙기고 싶어 합니다.'),
+    O('사다리나 말 근처','소중한 것을 친구나 배우자와 함께 돌보고 싶어 합니다.'),
+    O('여기저기 흩어져 있다','아끼는 대상에게 자유를 주고, 스스로 자라도록 지켜보는 편입니다.')]},
+  {id:'storm',type:'single',prompt:'폭풍은 어디쯤 있나요?',sym:'폭풍 = 걱정·스트레스, 거리 = 지금 얼마나 가까운지',opts:[
+    O('지평선 너머 아주 멀리','지금은 큰 걱정이 없습니다. 문제가 있어도 아직 먼 일로 느낍니다.'),
+    O('점점 다가오고 있다','곧 마주해야 할 부담이 있습니다. 미리 준비하고 있다는 뜻이기도 합니다.'),
+    O('바로 머리 위에 있다','지금 스트레스 한가운데 있습니다. 혼자 버티기보다 쉬어 갈 틈을 만드는 것이 좋겠습니다.'),
+    O('이미 지나갔다','힘든 시기를 막 지나왔습니다. 회복하는 중입니다.')]},
+  {id:'stormPower',type:'single',prompt:'폭풍은 얼마나 거센가요?',sym:'폭풍의 세기 = 부담의 크기',opts:[
+    O('잔잔한 모래바람','걱정이 있어도 감당할 만한 수준입니다.'),
+    O('꽤 거센 바람','무시하기 어려운 부담이 있습니다. 하나씩 나눠서 다루면 훨씬 가벼워집니다.'),
+    O('모든 걸 삼킬 듯한 폭풍','부담이 크게 느껴지는 상태입니다. 믿을 만한 사람에게 이야기해 보세요.')]}
+  ],
+  note:'다섯 가지 상징 사이의 거리도 함께 보세요. 큐브(나)와 가까이 있는 것이 지금 마음속에서 가까운 것입니다.'},
+
+{ id:'forest', title:'숲 속 산책', scene:'forest', time:'약 3분', blurb:'소중한 사람, 문제, 야망, 만족, 사랑',
+  intro:['당신은 누군가와 함께 숲길을 걷고 있습니다.','걷다 보면 동물을 만나고, 오두막을 지나고, 물가에 닿습니다. 장면을 떠올리며 하나씩 답해 주세요.'],
+  qs:[
+  {id:'who',type:'text',prompt:'숲을 함께 걷는 사람은 누구인가요?',hint:'이름이나 관계를 적어 주세요. 예: 엄마, 오랜 친구 민수',ph:'함께 걷는 사람',sym:'동행인 = 인생에서 가장 중요한 사람',
+    res:v=>`‘${v}’. 지금 당신 삶에서 가장 중요한 사람입니다. 뒤에 나오는 컵 질문은 이 사람과의 관계를 보여줍니다.`},
+  {id:'animal',type:'single',prompt:'길에서 어떤 동물을 만났나요?',sym:'동물 = 지금 마주한 문제의 성격',opts:[
+    O('토끼나 다람쥐 같은 작은 동물','지금의 문제는 귀찮지만 위협적이지 않은 일들입니다.'),
+    O('사슴','조심스럽게 다뤄야 하는 섬세한 문제가 있습니다. 관계나 감정과 관련된 일일 가능성이 큽니다.'),
+    O('늑대','경쟁이나 갈등처럼 긴장을 주는 문제가 있습니다.'),
+    O('곰','피하기 어려운 큰 과제를 마주하고 있습니다.'),
+    O('처음 보는 낯선 동물','아직 정체를 모르는 걱정이 있습니다. 새로운 환경이나 변화에서 오는 불확실함입니다.')]},
+  {id:'animalSize',type:'single',prompt:'그 동물은 얼마나 큰가요?',sym:'동물의 크기 = 문제의 크기',opts:[
+    O('손바닥만 하다','문제가 작게 느껴집니다. 충분히 다룰 수 있다고 생각합니다.'),
+    O('강아지만 하다','신경 쓰이지만 감당할 수 있는 크기입니다.'),
+    O('사람만 하다','문제가 꽤 크게 느껴집니다. 지금 에너지가 그쪽으로 많이 쓰이고 있습니다.'),
+    O('사람보다 훨씬 크다','문제가 압도적으로 느껴지는 상태입니다. 작게 쪼개서 보면 덜 무거워질 수 있습니다.')]},
+  {id:'animalAct',type:'single',prompt:'그 동물은 어떻게 행동하나요?',sym:'동물의 태도 = 문제를 받아들이는 방식',opts:[
+    O('다가와서 친근하게 군다','문제를 위협보다 기회로 봅니다. 낙관적인 태도입니다.'),
+    O('멀찍이서 지켜본다','문제를 의식하고 있지만 아직 정면으로 마주하지는 않았습니다.'),
+    O('길을 막고 서 있다','문제가 앞길을 막는다고 느낍니다. 지금 먼저 풀어야 할 일입니다.'),
+    O('금방 사라진다','걱정이 생겨도 오래 붙잡지 않는 편입니다.')]},
+  {id:'hut',type:'single',prompt:'오두막이 나타났습니다. 얼마나 큰가요?',sym:'오두막의 크기 = 야망',opts:[
+    O('작고 아담하다','큰 성공보다 소박하고 안정된 삶을 원합니다.'),
+    O('가족이 살 만한 크기','현실적이고 균형 잡힌 목표를 가지고 있습니다.'),
+    O('저택처럼 크다','야망이 크고 이루고 싶은 것이 많습니다.')]},
+  {id:'fence',type:'single',prompt:'오두막에 울타리가 있나요?',sym:'울타리 = 다른 사람에게 마음을 여는 정도',opts:[
+    O('울타리가 없다','사람들에게 마음을 쉽게 엽니다. 누구든 반갑게 맞이합니다.'),
+    O('낮은 울타리가 있다','기본적으로 열려 있지만 선은 지킵니다. 친해지는 데 시간이 조금 필요합니다.'),
+    O('높고 단단한 울타리가 있다','자신의 공간을 철저히 지킵니다. 믿을 수 있는 사람에게만 문을 엽니다.')]},
+  {id:'table',type:'single',prompt:'안에 들어가니 식탁이 있습니다. 위에 무엇이 있나요?',sym:'식탁 = 현재 삶의 만족도',opts:[
+    O('아무것도 없다','지금의 삶에 채워지지 않은 부분이 있다고 느낍니다.'),
+    O('빵과 물 정도','필요한 것은 갖췄지만 여유는 부족하다고 느낍니다.'),
+    O('음식이 푸짐하다','현재 삶에 꽤 만족하고 있습니다.'),
+    O('꽃이나 촛불 같은 장식','물질보다 분위기와 마음의 여유를 중요하게 여깁니다. 삶을 즐길 줄 압니다.')]},
+  {id:'cup',type:'single',prompt:'식탁 위에 컵이 하나 있습니다. 무엇으로 만든 컵인가요?',sym:'컵 = 동행인과의 관계를 얼마나 단단하게 느끼는지',opts:[
+    O('유리','그 사람과의 관계를 소중하지만 깨지기 쉬운 것으로 느낍니다. 조심스럽게 아끼고 있습니다.'),
+    O('도자기','따뜻하고 정성스러운 관계입니다. 오래 아껴 쓰는 그릇처럼 대합니다.'),
+    O('금속','쉽게 흔들리지 않는 단단한 관계라고 믿습니다.'),
+    O('나무','자연스럽고 편안한 관계입니다. 꾸밈없이 서로를 대합니다.'),
+    O('종이나 플라스틱','관계가 아직 가볍거나, 잠시 머무는 관계라고 느끼는 면이 있습니다.')]},
+  {id:'cupAct',type:'single',prompt:'그 컵을 어떻게 하나요?',sym:'컵을 다루는 방식 = 관계를 대하는 태도',opts:[
+    O('물을 따라 마신다','관계를 적극적으로 누리고 있습니다.'),
+    O('그대로 둔다','관계를 소중히 여기지만 표현은 아끼는 편입니다.'),
+    O('챙겨서 가져간다','그 사람과 함께하는 미래를 생각하고 있습니다.'),
+    O('깨지거나 버린다','그 관계에 지쳤거나 정리하고 싶은 마음이 있을 수 있습니다.')]},
+  {id:'water',type:'single',prompt:'밖으로 나오니 물이 보입니다. 어떤 물인가요?',sym:'물 = 사랑과 감정에 대한 태도',opts:[
+    O('작은 웅덩이','감정을 조용히 담아 두는 편입니다. 사랑을 크게 드러내지 않습니다.'),
+    O('졸졸 흐르는 시냇물','감정이 자연스럽게 흐릅니다. 편안하고 꾸준한 사랑을 원합니다.'),
+    O('잔잔한 호수','깊고 안정적인 감정을 원합니다. 오래가는 관계를 중시합니다.'),
+    O('넓은 바다','사랑에 대한 기대와 열정이 큽니다.'),
+    O('쏟아지는 폭포','감정이 강렬하고 뜨겁습니다. 사랑할 때 전부를 쏟는 편입니다.')]},
+  {id:'waterAct',type:'single',prompt:'그 물 앞에서 무엇을 하나요?',sym:'물에 다가가는 방식 = 감정을 표현하는 적극성',opts:[
+    O('그냥 지나간다','감정 표현에 신중합니다. 마음은 있어도 먼저 다가가지 않는 편입니다.'),
+    O('손이나 발만 담가 본다','조심스럽게 다가가며 상대를 알아가는 편입니다.'),
+    O('뛰어들어 헤엄친다','감정에 솔직하고 적극적입니다.'),
+    O('한참 동안 바라본다','사랑을 이상적으로 그립니다. 마음속에 오래 간직하는 편입니다.')]}
+  ],
+  note:'동행인과 컵 답을 함께 보면 그 사람과의 관계가, 동물과 벽처럼 막아선 것들을 보면 요즘의 고민이 보입니다.'},
+
+{ id:'three-animals', title:'세 마리의 동물', scene:'night', time:'약 2분', blurb:'보이고 싶은 나, 보이는 나, 진짜 나',
+  intro:['좋아하는 동물 세 가지를 떠올려 보세요. 떠오른 순서가 중요합니다.','각 동물이 왜 좋은지 형용사로 짧게 적어 주세요. 예: 독립적이고 우아해서'],
+  qs:[1,2,3].map((n,i)=>({id:'a'+n,type:'fields',prompt:`${['첫','두','세'][i]} 번째로 좋아하는 동물은?`,
+    hint:'동물 이름과, 그 동물이 좋은 이유를 적어 주세요.',
+    fields:[{id:'name',label:'동물',ph:['고양이','돌고래','부엉이'][i]},{id:'why',label:'좋은 이유',ph:['독립적이고 우아해서','다정하고 똑똑해서','조용하고 지혜로워서'][i]}],
+    sym:['첫 번째 동물 = 남에게 보이고 싶은 나','두 번째 동물 = 남이 실제로 보는 나','세 번째 동물 = 진짜 나'][i],
+    res:v=>`‘${v.name}’, “${v.why}”. ${['이 표현이 다른 사람에게 보여주고 싶은 당신의 모습입니다.','주변 사람들은 당신을 이렇게 보고 있을 가능성이 큽니다.','겉으로 다 드러내지 않는, 당신의 본래 모습입니다.'][i]}`})),
+  note:'세 표현을 나란히 놓고 보세요. 첫째와 셋째가 비슷하면 겉과 속이 일치하는 편이고, 많이 다르면 보여주고 싶은 모습과 진짜 모습 사이에 거리가 있다는 뜻입니다. 둘째는 주변 사람에게 직접 물어보며 확인해 보면 재미있습니다.'},
+
+{ id:'wall', title:'길 위의 벽', scene:'wall', time:'약 1분', blurb:'장애물을 대하는 방식',
+  intro:['길을 걷다 보니 앞에 벽이 나타났습니다.','벽의 모습과 당신이 하는 행동을 떠올려 보세요.'],
+  qs:[
+  {id:'height',type:'single',prompt:'벽은 얼마나 높은가요?',sym:'벽의 높이 = 지금 느끼는 난관의 크기',opts:[
+    O('무릎 높이','지금의 어려움을 가볍게 여깁니다. 충분히 넘을 수 있다고 믿습니다.'),
+    O('내 키 정도','노력하면 넘을 수 있는 현실적인 과제로 봅니다.'),
+    O('올려다볼 만큼 높다','꽤 버거운 난관을 마주하고 있습니다.'),
+    O('끝이 보이지 않는다','지금의 문제가 막막하게 느껴집니다. 혼자 짊어지지 말고 도움을 구해 보세요.')]},
+  {id:'material',type:'single',prompt:'벽은 무엇으로 되어 있나요?',sym:'벽의 재질 = 장애물이 얼마나 단단하다고 느끼는지',opts:[
+    O('나무 판자','장애물이 생각보다 약하다고 봅니다. 마음먹으면 바꿀 수 있습니다.'),
+    O('벽돌','하나씩 쌓인 문제입니다. 하나씩 풀면 됩니다.'),
+    O('돌','오래되고 단단한 문제입니다. 시간이 걸릴 수 있습니다.'),
+    O('철','쉽게 바뀌지 않는 구조적인 벽을 느낍니다.'),
+    O('유리','건너편이 보이는 벽입니다. 목표는 분명한데 방법이 막혀 있는 상태입니다.')]},
+  {id:'end',type:'single',prompt:'벽 양옆은 어떤가요?',sym:'벽의 끝 = 해결 가능성에 대한 기대',opts:[
+    O('옆으로 끝없이 이어진다','돌아갈 길이 없다고 느낍니다. 정면 돌파 말고 다른 선택지도 찾아보세요.'),
+    O('조금 걸으면 끝이 보인다','문제에 해결책이 있다고 믿습니다.'),
+    O('작은 문이 하나 있다','열쇠만 찾으면 된다고 생각합니다. 이미 실마리를 알고 있을지도 모릅니다.')]},
+  {id:'act',type:'single',prompt:'당신은 어떻게 하나요?',sym:'대처 방식 = 문제 해결 스타일',opts:[
+    O('타고 넘는다','정면으로 부딪혀 해결하는 도전형입니다.'),
+    O('끝까지 돌아서 간다','유연하게 우회로를 찾는 전략형입니다.'),
+    O('부수고 지나간다','강한 추진력으로 장애물을 없애는 돌파형입니다. 주변이 다치지 않게 속도를 조절하면 좋습니다.'),
+    O('문이나 틈을 찾는다','구조를 파악하고 해법을 찾는 분석형입니다.'),
+    O('누군가 오길 기다린다','협력과 때를 중시하는 신중형입니다. 혼자보다 함께 풀 때 힘을 냅니다.'),
+    O('왔던 길로 되돌아간다','맞지 않는 길이면 방향을 바꾸는 현실형입니다. 포기가 아니라 선택일 수 있습니다.')]}
+  ],
+  note:'높이와 재질은 문제를 어떻게 느끼는지를, 마지막 행동은 실제로 어떻게 움직이는지를 보여줍니다.'},
+
+{ id:'island', title:'바다 위의 섬', scene:'island', time:'약 1분', blurb:'내면의 상태와 도움을 받는 방식',
+  intro:['배가 난파되어 무인도에 혼자 남게 되었습니다.','섬을 둘러보고, 멀리 지나가는 배를 발견하기까지 떠올려 보세요.'],
+  qs:[
+  {id:'look',type:'single',prompt:'섬은 어떤 모습인가요?',sym:'섬의 모습 = 지금 내면의 상태',opts:[
+    O('야자수와 열매가 풍성하다','내면이 넉넉합니다. 혼자 있어도 스스로를 채울 줄 압니다.'),
+    O('모래와 바위뿐이다','마음이 조금 메말라 있을 수 있습니다. 채워 줄 무언가가 필요한 시기입니다.'),
+    O('울창한 정글이다','생각과 감정이 많고 복잡합니다. 아직 탐험하지 않은 내면이 많습니다.'),
+    O('작은 오두막이 있다','어디서든 자기만의 안식처를 만들 줄 압니다.')]},
+  {id:'size',type:'single',prompt:'섬은 얼마나 넓은가요?',sym:'섬의 크기 = 혼자만의 공간이 얼마나 필요한지',opts:[
+    O('몇 걸음이면 끝난다','혼자만의 공간은 조금이면 충분합니다. 사람들 사이에 있을 때 편합니다.'),
+    O('하루면 둘러볼 수 있다','혼자만의 시간과 함께하는 시간의 균형을 원합니다.'),
+    O('끝을 알 수 없을 만큼 넓다','혼자만의 시간과 공간이 많이 필요합니다.')]},
+  {id:'feel',type:'single',prompt:'혼자 남은 기분은 어떤가요?',sym:'혼자 남은 기분 = 고독을 대하는 태도',opts:[
+    O('편안하고 자유롭다','고독을 즐길 줄 압니다. 혼자 있는 시간에 에너지를 채웁니다.'),
+    O('불안하고 두렵다','혼자 남는 상황을 힘들어합니다. 곁에 사람이 있을 때 안정감을 느낍니다.'),
+    O('심심하고 지루하다','자극과 활동이 필요한 사람입니다.'),
+    O('외롭다','사람에 대한 그리움이 있습니다. 누군가와 연결되고 싶은 마음이 큰 시기입니다.')]},
+  {id:'ship',type:'single',prompt:'멀리 배가 지나갑니다. 어떻게 하나요?',sym:'배에 대한 반응 = 다른 사람의 도움을 받아들이는 방식',opts:[
+    O('소리치며 손을 흔든다','도움이 필요하면 바로 요청합니다. 솔직하고 적극적입니다.'),
+    O('불을 피워 신호를 보낸다','도움을 받되, 스스로 준비하고 방법을 마련하는 편입니다.'),
+    O('배까지 헤엄쳐 간다','도움을 기다리기보다 먼저 움직입니다. 독립심과 행동력이 강합니다.'),
+    O('지켜보기만 한다','도움이 필요해도 망설입니다. 부담 주기 싫은 마음이 먼저 듭니다.'),
+    O('섬에 남기로 한다','지금은 혼자만의 시간이 더 필요합니다. 스스로 충분하다고 느낍니다.')]}
+  ],
+  note:'섬의 모습과 기분은 지금의 마음 상태를, 배에 대한 반응은 힘들 때 사람에게 기대는 방식을 보여줍니다.'}
+];
+
+/* ---------- state ---------- */
+const KEY='maum-tests-v1';
+let state={answers:{},done:{}};
+try{const s=JSON.parse(localStorage.getItem(KEY)||'null'); if(s&&s.answers) state={answers:s.answers,done:s.done||{}};}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+
+const $app=document.getElementById('app');
+const byId=id=>TESTS.find(t=>t.id===id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ans=id=>state.answers[id]||(state.answers[id]={});
+const visQs=t=>{const a=ans(t.id);return t.qs.filter(q=>!q.when||q.when(a));};
+function isAnswered(q,v){
+  if(v==null) return false;
+  if(q.type==='single') return typeof v==='number';
+  if(q.type==='order') return Array.isArray(v)&&v.length===q.items.length;
+  if(q.type==='text') return String(v).trim().length>0;
+  if(q.type==='fields') return q.fields.every(f=>v[f.id]&&String(v[f.id]).trim());
+  return false;
+}
+function progressOf(t){const qs=visQs(t),a=ans(t.id);return qs.filter(q=>isAnswered(q,a[q.id])).length;}
+
+let view={name:'home'};
+let advanceTimer=null;
+
+function go(v){
+  clearTimeout(advanceTimer);
+  view=v;
+  const want=v.name==='home'?'':v.id;
+  if(location.hash.slice(1)!==want){ if(want) location.hash=want; else history.replaceState(null,'',location.pathname+location.search); }
+  render(); window.scrollTo(0,0);
+}
+
+/* ---------- views ---------- */
+function topBar(backAct,backLabel,title,extra){
+  return `<header class="top"><div class="top-in"><button class="back" data-act="${backAct}" aria-label="${backLabel}">‹ ${backLabel}</button><span class="top-title">${esc(title)}</span>${extra||''}</div>`;
+}
+function actions(btns){return `<div class="actions"><div class="actions-in">${btns}</div></div>`;}
+
+function vHome(){
+  const cards=TESTS.map(t=>{
+    const n=visQs(t).length, p=progressOf(t);
+    const chip=state.done[t.id]?'<span class="chip done">결과 있음</span>':(p>0?'<span class="chip">진행 중</span>':'');
+    return `<li><button class="card" data-act="open" data-id="${t.id}"><div class="thumb">${SCENES[t.scene]}</div><div class="card-b"><div class="card-h"><span class="card-t">${t.title}</span>${chip}</div><span class="card-d">${t.blurb}</span><span class="card-m">질문 ${n}개 · ${t.time}</span></div></button></li>`;
+  }).join('');
+  return `<header class="top"><div class="top-in"><div class="brand"><span class="brand-t">마음 풍경</span><span class="brand-s">장면을 떠올리며 답하는 일곱 가지 테스트</span></div></div></header>
+  <main class="wrap home"><p class="lede">장면을 상상하며 처음 떠오르는 답을 고르세요. 모든 질문에 답하고 ‘결과 보기’를 누르면 해석이 열립니다.</p>
+  <ul class="list">${cards}</ul>
+  <p class="note">이 테스트들은 대화를 여는 놀이입니다. 과학적으로 검증된 검사가 아니므로 채용이나 평가에는 쓰지 마세요. 답은 이 기기의 브라우저에만 저장됩니다.</p></main>`;
+}
+
+function vIntro(t){
+  const p=progressOf(t), n=visQs(t).length, done=state.done[t.id];
+  let btns;
+  if(done) btns=`<button class="btn btn-ghost wide" data-act="restart">다시 하기</button><button class="btn btn-primary" data-act="result">결과 보기</button>`;
+  else if(p>0) btns=`<button class="btn btn-ghost wide" data-act="restart">처음부터</button><button class="btn btn-primary" data-act="resume">이어서 하기</button>`;
+  else btns=`<button class="btn btn-primary" data-act="resume">시작하기</button>`;
+  return topBar('home','목록',t.title)+`</header>
+  <main class="wrap intro"><div class="banner">${SCENES[t.scene]}</div><h1>${t.title}</h1>${t.intro.map((x,i)=>`<p class="${i?'sub':''}">${x}</p>`).join('')}<p class="sub">질문 ${n}개 · ${t.time}</p></main>`+actions(btns);
+}
+
+function vQuestion(t,i){
+  const qs=visQs(t), q=qs[i], a=ans(t.id), v=a[q.id], last=i===qs.length-1;
+  let body='';
+  if(q.type==='single'){
+    body=`<div class="opts" role="radiogroup">${q.opts.map((o,k)=>`<button class="opt" role="radio" aria-checked="${v===k}" aria-pressed="${v===k}" data-act="pick" data-k="${k}"><span class="mark chk"></span><span>${o.t}</span></button>`).join('')}</div>`;
+  } else if(q.type==='order'){
+    const arr=Array.isArray(v)?v:[];
+    body=`<div class="opts">${q.items.map(it=>{const pos=arr.indexOf(it.k);return `<button class="opt" aria-pressed="${pos>=0}" data-act="order" data-k="${it.k}"><span class="mark">${pos>=0?pos+1:''}</span><span>${it.k}</span></button>`;}).join('')}</div>
+    <p class="seq">${arr.length?`순서: <b>${arr.join(' → ')}</b>`:'아직 고르지 않았습니다.'}</p>`;
+  } else if(q.type==='text'){
+    body=`<div class="field"><label for="f-${t.id}-${q.id}">답</label><input id="f-${t.id}-${q.id}" type="text" maxlength="40" data-field="" placeholder="${q.ph}" value="${esc(v||'')}" autocomplete="off"></div>`;
+  } else if(q.type==='fields'){
+    const o=v||{};
+    body=q.fields.map(f=>`<div class="field"><label for="f-${t.id}-${q.id}-${f.id}">${f.label}</label><input id="f-${t.id}-${q.id}-${f.id}" type="text" maxlength="40" data-field="${f.id}" placeholder="예: ${f.ph}" value="${esc(o[f.id]||'')}" autocomplete="off"></div>`).join('');
+  }
+  const pct=Math.round((i+1)/qs.length*100);
+  return topBar('prev','이전',t.title,`<span class="count">${i+1} / ${qs.length}</span>`)+`<div class="prog"><i style="width:${pct}%"></i></div></header>
+  <main class="wrap"><p class="eyebrow">질문 ${i+1}</p><h2 class="q">${q.prompt}</h2>${q.hint?`<p class="hint">${q.hint}</p>`:'<p class="hint"></p>'}${body}</main>`+
+  actions(`${i>0?'<button class="btn btn-ghost" data-act="prev">이전</button>':''}<button class="btn btn-primary" id="nextBtn" data-act="next" ${isAnswered(q,v)?'':'disabled'}>${last?'결과 보기':'다음'}</button>`);
+}
+
+function buildResult(t){
+  const a=ans(t.id); let html='', txt=[`[${t.title}]`];
+  const items=[];
+  visQs(t).forEach(q=>{
+    const v=a[q.id];
+    if(q.type==='order'){
+      const order=q.drop?[...v].reverse():[...v];
+      const it=k=>q.items.find(x=>x.k===k);
+      const top=it(order[0]), low=it(order[order.length-1]);
+      html+=`<div class="lead"><span class="sym">가장 소중한 가치</span><p class="big">${top.m}</p><p>${top.k}를 ${q.drop?'마지막까지 남겼습니다':'가장 먼저 골랐습니다'}. ${top.d}</p></div>
+      <p class="sec-t">가치의 순서</p><ol class="rank">${order.map((k,n)=>{const x=it(k);return `<li><span class="n">${n+1}</span><div><div class="row"><span>${x.m}</span><span>${x.k}</span></div><div class="track"><i style="width:${(order.length-n)/order.length*100}%"></i></div></div></li>`;}).join('')}</ol>
+      <ul class="items"><li><span class="sym">가장 먼저 내려놓을 수 있는 것</span><p class="ans">${low.m}</p><p class="mean">${low.k}${q.drop?'를 가장 먼저 떠나보냈습니다':'를 마지막에 골랐습니다'}. 어려운 상황에서 가장 먼저 양보하는 영역입니다. 덜 소중하다는 뜻이라기보다, 지금은 다른 가치가 앞선다는 뜻에 가깝습니다.</p></li></ul>`;
+      txt.push(`가장 소중한 가치: ${top.m} (${top.k})`, `순서: ${order.map(k=>it(k).m).join(' > ')}`, `가장 먼저 내려놓을 수 있는 것: ${low.m} (${low.k})`);
+    } else {
+      let answer, mean;
+      if(q.type==='single'){answer=q.opts[v].t; mean=q.opts[v].m;}
+      else if(q.type==='text'){answer=String(v).trim(); mean=q.res(answer);}
+      else {const o={}; q.fields.forEach(f=>o[f.id]=String(v[f.id]).trim()); answer=`${o.name} · ${o.why}`; mean=q.res(o);}
+      items.push(`<li><span class="sym">${q.sym}</span><p class="ans">${esc(answer)}</p><p class="mean">${esc(mean)}</p></li>`);
+      txt.push(`· ${q.sym}\n  내 답: ${answer}\n  ${mean}`);
+    }
+  });
+  if(items.length) html+=`<ul class="items">${items.join('')}</ul>`;
+  html+=`<p class="after">${t.note}</p>`;
+  txt.push('', t.note, '※ 재미로 보는 비유 테스트입니다.');
+  return {html, text:txt.join('\n')};
+}
+
+function vResult(t){
+  const r=buildResult(t);
+  return topBar('home','목록',t.title)+`</header>
+  <main class="wrap"><div class="banner">${SCENES[t.scene]}</div><h1 class="res-h">${t.title} 해석</h1>${r.html}</main>`+
+  actions(`<button class="btn btn-ghost wide" data-act="restart">다시 하기</button><button class="btn btn-primary" data-act="copy">결과 복사</button>`);
+}
+
+function render(){
+  const t=view.id?byId(view.id):null;
+  if(view.name==='home'||!t) $app.innerHTML=vHome();
+  else if(view.name==='intro') $app.innerHTML=vIntro(t);
+  else if(view.name==='q') $app.innerHTML=vQuestion(t,view.i);
+  else if(view.name==='result') $app.innerHTML=vResult(t);
+}
+
+/* ---------- events ---------- */
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,1800);}
+function firstOpen(t){const qs=visQs(t),a=ans(t.id);const k=qs.findIndex(q=>!isAnswered(q,a[q.id]));return k<0?qs.length-1:k;}
+
+function next(){
+  const t=byId(view.id), qs=visQs(t), q=qs[view.i];
+  if(!isAnswered(q,ans(t.id)[q.id])) return;
+  if(view.i>=qs.length-1){
+    const miss=qs.findIndex(x=>!isAnswered(x,ans(t.id)[x.id]));
+    if(miss>=0){toast('답하지 않은 질문이 있습니다.');go({name:'q',id:t.id,i:miss});return;}
+    state.done[t.id]=true; save(); go({name:'result',id:t.id});
+  } else go({name:'q',id:t.id,i:view.i+1});
+}
+
+$app.addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]'); if(!b) return;
+  const act=b.dataset.act, t=view.id?byId(view.id):null;
+  if(act==='home') return go({name:'home'});
+  if(act==='open') return go({name:'intro',id:b.dataset.id});
+  if(act==='resume') return go({name:'q',id:t.id,i:firstOpen(t)});
+  if(act==='restart'){state.answers[t.id]={};delete state.done[t.id];save();return go({name:'q',id:t.id,i:0});}
+  if(act==='result') return go({name:'result',id:t.id});
+  if(act==='prev') return view.i>0?go({name:'q',id:t.id,i:view.i-1}):go({name:'intro',id:t.id});
+  if(act==='next') return next();
+  if(act==='pick'){
+    const q=visQs(t)[view.i]; ans(t.id)[q.id]=+b.dataset.k; delete state.done[t.id]; save();
+    const cur=view; render();
+    const qs=visQs(t);
+    if(view.i<qs.length-1){clearTimeout(advanceTimer);advanceTimer=setTimeout(()=>{if(view===cur) go({name:'q',id:t.id,i:view.i+1});},260);}
+    return;
+  }
+  if(act==='order'){
+    const q=visQs(t)[view.i], a=ans(t.id); let arr=Array.isArray(a[q.id])?[...a[q.id]]:[];
+    const k=b.dataset.k; arr=arr.includes(k)?arr.filter(x=>x!==k):[...arr,k];
+    a[q.id]=arr; delete state.done[t.id]; save(); render(); return;
+  }
+  if(act==='copy'){
+    const text=buildResult(t).text;
+    const fallback=()=>{const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();let ok=false;try{ok=document.execCommand('copy');}catch(_){}ta.remove();toast(ok?'결과를 복사했습니다.':'복사하지 못했습니다. 화면을 길게 눌러 복사해 주세요.');};
+    if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(()=>toast('결과를 복사했습니다.'),fallback);
+    else fallback();
+  }
+});
+
+$app.addEventListener('input',e=>{
+  const el=e.target; if(!el.matches('[data-field]')) return;
+  const t=byId(view.id), q=visQs(t)[view.i], a=ans(t.id);
+  if(q.type==='text') a[q.id]=el.value;
+  else {a[q.id]=Object.assign({},a[q.id]||{}); a[q.id][el.dataset.field]=el.value;}
+  delete state.done[t.id]; save();
+  const nb=document.getElementById('nextBtn'); if(nb) nb.disabled=!isAnswered(q,a[q.id]);
+});
+$app.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&e.target.matches('[data-field]')){
+    const all=[...$app.querySelectorAll('[data-field]')], k=all.indexOf(e.target);
+    if(k<all.length-1) all[k+1].focus(); else {e.target.blur(); next();}
+  }
+});
+
+function fromHash(){
+  const id=location.hash.slice(1);
+  if(id&&byId(id)){ if(view.id!==id) {view={name:'intro',id};render();window.scrollTo(0,0);} }
+  else if(view.name!=='home'){view={name:'home'};render();window.scrollTo(0,0);}
+}
+window.addEventListener('hashchange',fromHash);
+const h=location.hash.slice(1);
+if(h&&byId(h)) view={name:'intro',id:h};
+render();
+</script>
+
+</body>
+</html>
